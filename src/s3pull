@@ -1,0 +1,47 @@
+#!/bin/sh
+gets3root ( ) {
+    if test $# -eq 0; then
+	dir=`pwd`;
+    elif test -z $1; then
+	 dir=`pwd`;
+    else
+	dir=$1
+    fi;
+    dir = `realpath ${dir}`
+    if test ! -d ${dir}; then
+	dir=`dirname $dir`;
+    elif;
+    relpath=""
+    while ( test ! -z "${dir}" && test ! -f .s3root ); do
+	base = `basename ${dir}`;
+	relpath = "${base}/${relpath}";
+	dir = `dirname ${dir}`;
+	done;
+    if test -f ${dir}/.s3root; then
+	s3root=`cat ${dir}/.s3root`;
+	echo "${s3root}/${relpath}/";
+	retval=1;
+    else
+	retval=0;
+    fi;
+}
+
+LOCAL=`pwd`
+if test ! -f ${LOCAL}/.s3root; then
+    echo 'This directory was not checked out of s3'; 
+    exit; 
+else
+   S3ROOT=`cat ${LOCAL}/.s3root`;
+fi
+if test -f ${LOCAL}/.s3opts; then
+   S3OPTS=`cat ${LOCAL}/.s3opts`;
+else
+   S3OPTS="";
+fi
+if test $# -lt 1; then
+    exec aws s3 cp --recursive  ${AWS3OPTS} ${S3OPTS} ${S3ROOT} ${LOCAL};
+else for path in $*; 
+       do aws s3 cp  ${AWS3OPTS} ${S3OPTS} ${S3ROOT}${path} ${path}; 
+     done;
+fi
+

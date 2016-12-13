@@ -1,0 +1,38 @@
+#!/bin/sh
+
+gets3root ( ) {
+    if test $# -eq 0; then
+	dir=`pwd`;
+    elif test -z $1; then
+	 dir=`pwd`;
+    else
+	dir=$1
+    fi;
+    dir = `realpath ${dir}`
+    if test ! -d ${dir}; then
+	dir=`dirname $dir`;
+    elif;
+    relpath=""
+    while ( test ! -z "${dir}" && test ! -f .s3root ); do
+	base = `basename ${dir}`;
+	relpath = "${base}/${relpath}";
+	dir = `dirname ${dir}`;
+	done;
+    if test -f ${dir}/.s3root; then
+	s3root=`cat ${dir}/.s3root`;
+	echo "${s3root}/${relpath}/";
+	retval=1;
+    else
+	retval=0;
+    fi;
+}
+
+
+S3PATH=$1
+shift;
+S3OPTS="-rMPv --rexclude='(.s3opts)|(.s3opts)|(.s3root)|(.svn.*)|(.*/svn/.*)|(.git.*)|(.*/git/.*)|(.*/[.].*)|(.*~)|(.*/originals/.*)|(originals/.*)|(tmp/.*)|(.*/tmp/.*)|(.*~)' $*"
+echo $S3PATH > .s3root
+echo $S3OPTS > .s3opts
+s3cmd get --encoding=utf-8 -H $S3OPTS $XS3OPTS $S3PATH.s3manifest .s3manifest
+s3update
+
