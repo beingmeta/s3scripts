@@ -1,7 +1,7 @@
 RONN_MANUAL       = S3Scripts
 RONN_ORGANIZATION = beingmeta.com
 
-PAGES=
+PAGES=s3checkout s3update s3commit s3src s3root s3setroot s3setopts
 
 man/%: ronn/%.ronn
 	ronn --roff < $< > $@
