@@ -1,0 +1,40 @@
+[comment]: # ( -*- Mode: markdown; -*- )
+s3checkout(1) -- copy s3 location to local filesystem
+=========================================
+
+## SYNOPSIS
+
+`s3checkout` *s3root* [*localpath*] [*s3opts*...]
+
+## DESCRIPTION
+
+This command makes a copy of the tree underneath *s3root* in Amazon's
+AWS S3 cloud storage and copies it into *localpath*. If *localpath* is
+not provided, the final component of *s3root* is used.
+
+This also writes a file `.s3root` into *localpath* recording *s3root*
+and the *s3opts* passed to the command. These are used by the other
+s3scripts commands.
+
+This interacts with S3 using  Amazon's `awscli` and the *s3opts* are
+passed the `aws` command.
+
+## FILES
+
+The `aws` command normally references config files in the user's home
+directory, either `~/.aws-config` or files in the `~/.aws`
+directory. These can specify AWS regions, credentials, or other
+information.
+
+## ENVIRONMENT
+
+The `aws` command may also use environment variables. These can
+specify AWS regions, credentials, or other information.
+
+# AUTHOR
+
+Ken Haase <kh@beingmeta.com>
+
+## SEE ALSO
+
+s3scripts(7), s3update(1), s3commit(1)

@@ -1,0 +1,47 @@
+[comment]: # ( -*- Mode: markdown; -*- )
+s3setroot(1) -- change the S3 root of the current directory
+=========================================
+
+## SYNOPSIS
+
+`s3setroot` *s3root* [default|add|] [*s3opts*...]
+
+## DESCRIPTION
+
+Changes the S3 root for this directory *s3root* and its options to
+*s3opts* (if provided). If no *s3opts* are provided, the existing
+`.s3opts` for the directory are left unchanged.
+
+If **default** is specified before the S3 opts, the default options
+are prepended to the provided options.
+
+If **add** is specified before the S3 opts, the provided options
+are appended to the current options for the directory.
+
+## FILES
+
+This affects the `.s3root` and `.s3opts` file in the current directory
+and copies their current contents (if changed) into `.s3root.bak` and
+`.s3opts.bak` (respectively).
+
+## ENVIRONMENT
+
+The default opts may be specified by the environment variable
+`S3SCRIPTOPTS`.
+
+## DIAGNOSTICS
+
+This only works in the root directory checked out from S3 and
+indicates when this is not the case.
+
+## BUGS
+
+This does not check if the specified *s3root* or *s3opts* are valid
+
+## AUTHOR
+
+Ken Haase <kh@beingmeta.com>
+
+## SEE ALSO
+
+s3scripts(7), s3checkout(1), s3setopts(1)

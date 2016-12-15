@@ -1,0 +1,46 @@
+[comment]: # ( -*- Mode: markdown; -*- )
+s3update(1) -- update a local directory from it's S3 root
+=========================================
+
+## SYNOPSIS
+
+`s3update` [`--root`] [*directory*] [*s3opts*...]
+
+## DESCRIPTION
+
+This command updates *directory* from it's S3 source using
+*s3opts*. If *directory* is not provided it uses the current working
+directory. It uses the `aws s3 sync` command to minimize the work done
+in updating the current directory.
+
+When *directory* is a subdirectory of a parent checked out from S3,
+only it and it's children are updated unless the `--root` option is
+specified to `s3update`.
+
+This interacts with S3 using Amazon's `awscli` and the *s3opts* are
+passed to the `aws s3 sync` command.
+
+## FILES
+
+The `aws` command normally references config files in the user's home
+directory, either `~/.aws-config` or files in the `~/.aws`
+directory. These can specify AWS regions, credentials, or other
+information.
+
+## ENVIRONMENT
+
+The `aws` command may also use environment variables. These can
+specify AWS regions, credentials, or other information.
+
+#BUGS
+
+When subdirectories contain their own `.s3root` files, this doesn't
+check those directories out of their S3 roots.
+
+# AUTHOR
+
+Ken Haase <kh@beingmeta.com>
+
+## SEE ALSO
+
+s3scripts(7), s3update(1), s3commit(1)

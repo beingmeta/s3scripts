@@ -1,0 +1,39 @@
+[comment]: # ( -*- Mode: markdown; -*- )
+s3src(1) -- get the S3 path of the current directory
+=========================================
+
+## SYNOPSIS
+
+`s3src` [*directory*]
+
+## DESCRIPTION
+
+Prints the S3 path from which *directory* was checked out (and from
+which it will be updated). This climbs the directory hierarchy from
+*directory* until it finds an `.s3root` file and appends the
+intervening directories to the contents of that file.
+
+If *directory* is not specified, this uses the current working
+directory.
+
+## FILES
+
+No files are affected by this command. It uses the `.s3root` files to
+determine the base S3 location of a checked out tree.
+
+## DIAGNOSTICS
+
+This exists with a return code of 1 if the *directory* is not checked
+out of S3.
+
+## BUGS
+
+No known bugs. Fingers crossed.
+
+## AUTHOR
+
+Ken Haase <kh@beingmeta.com>
+
+## SEE ALSO
+
+s3scripts(7), s3checkout(1), s3setopts(1)

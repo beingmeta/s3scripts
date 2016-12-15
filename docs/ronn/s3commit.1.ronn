@@ -1,0 +1,44 @@
+[comment]: # ( -*- Mode: markdown; -*- )
+s3commit(1) -- copies local files into their S3 root
+=========================================
+
+## SYNOPSIS
+
+`s3commit` [*files*...]
+
+## DESCRIPTION
+
+This command copies files from the local file system to the
+corresponding files on S3. This is the only way to add files to the S3
+repository using **s3scripts**.
+
+## FILES
+
+The `aws` command normally references config files in the user's home
+directory, either `~/.aws-config` or files in the `~/.aws`
+directory. These can specify AWS regions, credentials, or other
+information.
+
+## ENVIRONMENT
+
+The `aws` command may also use environment variables. These can
+specify AWS regions, credentials, or other information.
+
+## DIAGNOSTICS
+
+The program exits and a warning is generated when either a file
+doesn't have an S3 root or the copy failed.
+
+#BUGS
+
+When subdirectories contain their own `.s3root` files, this doesn't
+check those directories out of their S3 roots.
+
+# AUTHOR
+
+Ken Haase <kh@beingmeta.com>
+
+## SEE ALSO
+
+s3scripts(7), s3update(1)
+

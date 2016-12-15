@@ -1,0 +1,45 @@
+[comment]: # ( -*- Mode: markdown; -*- )
+s3setopts(1) -- change the S3 opts for the current directory
+=========================================
+
+## SYNOPSIS
+
+`s3setopts` [*s3opts*...]
+
+## DESCRIPTION
+
+Changes the S3 command line options for this directory.
+
+If the first argument is **default**, this appends the *default S3 opts*
+before the provided options. If the first argument is **add**, this
+adds the provided options to the end of the current S3 opts.
+
+The default S3 opts, which are used when checking out a new location,
+may be specified by the environment variable `S3DEFAULTOPTS`.
+
+## FILES
+
+This affects the `.s3opts` file in the current directory and writes
+the current `.s3opts` file into `.s3opts.bak` (if changed).
+
+## ENVIRONMENT
+
+The default S3 opts may be specified by the environment variable
+`S3SCRIPTOPTS`.
+
+## DIAGNOSTICS
+
+This only works in the root directory checked out from S3 and
+indicates when this is not the case.
+
+## BUGS
+
+This does not check if the specified *s3root* or *s3opts* are valid
+
+## AUTHOR
+
+Ken Haase <kh@beingmeta.com>
+
+## SEE ALSO
+
+s3scripts(7), s3checkout(1), s3setopts(1)
