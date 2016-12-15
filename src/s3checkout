@@ -1,44 +1,26 @@
 #!/bin/sh
 
-gets3root ( ) {
-    if test $# -eq 0; then
-	dir=`pwd`;
-    elif test -z $1; then
-	 dir=`pwd`;
-    else
-	dir=$1
-    fi;
-    dir = `realpath ${dir}`
-    if test ! -d ${dir}; then
-	dir=`dirname $dir`;
-    elif;
-    relpath=""
-    while ( test ! -z "${dir}" && test ! -f .s3root ); do
-	base = `basename ${dir}`;
-	relpath = "${base}/${relpath}";
-	dir = `dirname ${dir}`;
-	done;
-    if test -f ${dir}/.s3root; then
-	s3root=`cat ${dir}/.s3root`;
-	echo "${s3root}/${relpath}/";
-	retval=1;
-    else
-	retval=0;
-    fi;
-}
-
-
-S3PATH=$1;
-LOCALPATH=$2;
-shift; shift;
-if test "x${LOCALPATH}" == "x"; then
-  LOCALPATH=.
-fi;
-S3OPTS=$*;
-if test ! -d ${LOCALPATH}; then mkdir ${LOCALPATH}; fi
-echo ${S3PATH} > ${LOCALPATH}/.s3root;
-if test "x${S3OPTS}" != "x"; then
-   echo ${S3OPTS} > ~/.s3opts;
+S3PATH=$1
+if test $# -eq 2; then
+    LOCALPATH=$2; shift; shift;
+else
+    LOCALPATH=./`basename ${S3PATH}`;
+    shift;
 fi
+S3OPTS="${S3BASEOPTS:-$S3DEFAULTOPTS} $*";
+if test ! -d ${LOCALPATH}; then
+    if test -f ${LOCALPATH}; then
+	echo "${LOCALPATH} already exists and is not a directory";
+	exit;
+    else
+	mkdir ${LOCALPATH}; 
+    fi
+fi;
+if test -f ${LOCALPATH}/.s3root; then
+    echo "Overwriting ${LOCALPATH}/.s3root, saving into ${LOCALPATH}/.s3root.bak";
+    mv ${LOCALPATH}/.s3root ${LOCALPATH}/.s3root.bak
+fi; 
+echo ${S3PATH} > ${LOCALPATH}/.s3root;
+echo ${S3OPTS} > ~/.s3opts;
 exec aws s3 cp --recursive ${AWS3OPTS} ${S3OPTS} ${S3PATH} ${LOCALPATH};
 

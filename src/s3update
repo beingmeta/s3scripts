@@ -1,9 +1,53 @@
 #!/bin/sh
+gets3src ( ) {
+    output=
+    scan=
+    if test $# -gt 1; then
+	scan=$1
+	output=$2
+    elif test $# -gt 0; then
+	scan=$1
+    else
+	scan=`pwd`
+    fi;
+    if test "${scan}" == "."; then
+	scan=`pwd`;
+    elif test "${scan}" == ".."; then
+	scan=`pwd`;
+	scan=`dirname ${scan}`
+    fi
+    # echo scan=${scan}
+    scan=`realpath ${scan}`
+    if test ! -d ${scan}; then
+	base=`basename ${scan}`
+	relpath="${base}"
+	scan= `dirname ${scan}`
+    else
+	relpath="";
+    fi;
+    while ( test ! -z "${scan}" && test ! -f .s3root ); do
+	base=`basename ${scan}`
+	relpath="${scan}/${relpath}"
+	scan=`dirname ${scan}`
+    done;
+    if test -f ${scan}/.s3root; then
+	s3root=`cat ${scan}/.s3root`
+	if test -z "${output}"; then
+	    printf "%s\\n" "${s3root}/${relpath}/";
+	else
+	    printf "%s\\n" "${s3root}/${relpath}/" > ${output};
+	retval=0
+    else
+	retval=1
+    fi;
+}
+
 gets3root ( ) {
-    if test $# -eq 0; then
-	dir=`pwd`;
-    elif test -z $1; then
-	 dir=`pwd`;
+    output=
+    dir=
+    if test $# -gt 1; then
+	dir=$1
+	output=$2
     else
 	dir=$1
     fi;
@@ -18,32 +62,39 @@ gets3root ( ) {
 	dir = `dirname ${dir}`;
 	done;
     if test -f ${dir}/.s3root; then
-	s3root=`cat ${dir}/.s3root`;
-	echo "${s3root}/${relpath}/";
-	retval=1;
-    else
+	echo "${dir}/";
 	retval=0;
+    else
+	retval=1;
     fi;
 }
 
-if test $# -lt 1 || $1 == "-*"; then
-   LOCAL="."
-   S3OPTS="";
-else
-   LOCAL=$1;
-   shift;
-   S3OPTS=$*;
-fi
-if test ! -f ${LOCAL}/.s3root; then
-    echo 'This directory was not checked out of s3'; 
-    exit; 
-else
-   S3ROOT=`cat ${LOCAL}/.s3root`;
-fi
-if test -f ${LOCAL}/.s3opts; then
-   S3OPTS=`cat ${LOCAL}/.s3opts`;
-else
-   S3OPTS="";
-fi
-exec aws s3 sync ${AWS3OPTS} ${S3OPTS} ${S3ROOT} ${LOCAL}
+UPDATEROOT=no
+UPDATETREE=yes
 
+if test "$1" == "--root"; then
+    UPDATEROOT="yes"
+    shift;
+fi;
+if test "$1" == "--current"; then
+    UPDATETREE="no"
+    shift;
+fi;
+if test $# -eq 0 || test "$1" == "."; then
+    LOCAL=`pwd`;
+elif test "$1" == ".."; then
+    LOCAL=`pwd`;
+    LOCAL=`dirname ${thisdir}`;
+fi;
+if test "${UPDATEROOT}" = "yes"; then
+    LOCAL=`s3root ${LOCAL}`
+fi
+if ! (s3root ${LOCAL} /dev/null); then
+    echo 'This directory was not checked out of s3'; 
+    exit 1;
+else
+   S3SRC=`s3src ${LOCAL}`
+   ROOTDIR=`s3root ${LOCAL}`
+fi
+s3opts=`gets3opts ${ROOTDIR}`;
+exec aws s3 sync ${S3SCRIPTOPTS} ${S3UPDATEOPTS} ${s3opts} ${S3SRC} ${LOCAL}

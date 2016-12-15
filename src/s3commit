@@ -1,10 +1,54 @@
 #!/bin/sh
 
-gets3root ( ) {
-    if test $# -eq 0; then
-	dir=`pwd`;
-    elif test -z $1; then
-	 dir=`pwd`;
+gets3src ( ) {
+    output=
+    scan=
+    if test $# -gt 1; then
+	scan=$1
+	output=$2
+    elif test $# -gt 0; then
+	scan=$1
+    else
+	scan=`pwd`
+    fi;
+    if test "${scan}" == "."; then
+	scan=`pwd`;
+    elif test "${scan}" == ".."; then
+	scan=`pwd`;
+	scan=`dirname ${scan}`
+    fi
+    # echo scan=${scan}
+    scan=`realpath ${scan}`
+    if test ! -d ${scan}; then
+	base=`basename ${scan}`
+	relpath="${base}"
+	scan= `dirname ${scan}`
+    else
+	relpath="";
+    fi;
+    while ( test ! -z "${scan}" && test ! -f .s3root ); do
+	base=`basename ${scan}`
+	relpath="${scan}/${relpath}"
+	scan=`dirname ${scan}`
+    done;
+    if test -f ${scan}/.s3root; then
+	s3root=`cat ${scan}/.s3root`
+	if test -z "${output}"; then
+	    printf "%s\\n" "${s3root}/${relpath}/";
+	else
+	    printf "%s\\n" "${s3root}/${relpath}/" > ${output};
+	retval=0
+    else
+	retval=1
+    fi;
+}
+
+gets3opts ( ) {
+    output=
+    dir=
+    if test $# -gt 1; then
+	dir=$1
+	output=$2
     else
 	dir=$1
     fi;
@@ -14,31 +58,60 @@ gets3root ( ) {
     elif;
     relpath=""
     while ( test ! -z "${dir}" && test ! -f .s3root ); do
-	base = `basename ${dir}`;
-	relpath = "${base}/${relpath}";
 	dir = `dirname ${dir}`;
-	done;
+    done;
     if test -f ${dir}/.s3root; then
-	s3root=`cat ${dir}/.s3root`;
-	echo "${s3root}/${relpath}/";
-	retval=1;
-    else
+	if test -f ${dir}/.s3opts; then
+	    opts=`cat ${dir}/.s3opts`
+	else
+	    opts=${S3SCRIPTOPTS}
+	fi;
+	if test -z "${output}"; then
+	    fprintf "%s" "${opts}";
+	else
+	    fprintf "%s" "${opts}" > ${output};
+	fi;
 	retval=0;
+    else
+	retval=1;
     fi;
 }
 
-LOCAL=`pwd`
-if test ! -f ${LOCAL}/.s3root; then
-    echo 'This directory was not checked out of s3'; 
-    exit; 
-else
-   S3ROOT=`cat ${LOCAL}/.s3root`;
-fi
-if test -f ${LOCAL}/.s3opts; then
-   S3OPTS=`cat ${LOCAL}/.s3opts`;
-else
-   S3OPTS="";
-fi
-for path in $*; do aws s3 cp ${AWS3OPTS} ${S3OPTS} ${path} ${S3ROOT}${path}; done
+save2s3 ( ) {
+    path=$1;
+    retval=1;
+    if test -f ${path}; then
+	fullpath=`realpath ${path}`;
+	src=`gets3src ${fullpath} /dev/null`
+	opts=`gets3opts ${fullpath} /dev/null`
+	if test -z "${src}"; then
+	    echo "Warning: the path ${path} was not checked out of S3!";
+	    retval=1;
+	else
+	    if aws s3 sync ${S3SCRIPTOPTS} ${opts} ${path} ${src}${path}; then
+		retval=0;
+	    else
+		retval=1;
+	    fi;
+	fi;
+    elif test -d ${path};
+	 echo "The path ${path} is a directory";
+   else
+	echo "The path ${path} does not exist";
+    fi;
+}
+
+if test $# -eq 0; then
+    echo "Usage: s3commit [*file*] [*more files*...]";
+    exit 1;
+else for path in $*; do 
+	 if ! s3save ${path}; then
+	     echo "Failed to save ${path}, exiting";
+	     exit 1;
+	 fi;
+     done;
+fi;
+
+
 
 
