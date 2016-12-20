@@ -1,11 +1,16 @@
+## -*- Mode: shell-script; ##
 if test $# -eq 0; then
     echo "Usage: s3commit [*file*] [*more files*...]";
     exit 1;
 else for path in $*; do 
-	 if ! save2s3 ${path}; then
-	     echo "Failed to save ${path}, exiting";
-	     exit 1;
-	 fi;
+         if s3check ${path}; then
+             if ! save2s3 ${path}; then
+	         echo "Failed to save ${path}, exiting";
+                 exit 1;
+	     fi;
+         else
+	     echo The path ${path} was not checkout out of S3";
+	 fi;  
      done;
 fi;
 

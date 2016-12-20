@@ -1,9 +1,22 @@
 #!/bin/sh
 
 DEFAULT_AWS=`which aws`;
+SHOW_CMD=
 AWS=${AWS:-${DEFAULT_AWS}}
 
-echo AWS=${AWS}
+awscmd () {
+    if test ! -z "${SHOW_CMD}"; then
+        echo ${AWS} $*;
+    fi
+    ${AWS} $*;
+}
+
+awsexec () {
+    if test ! -z "${SHOW_CMD}"; then
+        echo ${AWS} $*;
+    fi
+    exec ${AWS} $*;
+}
 
 getrealpath ( ) {
     path=$1;
@@ -18,23 +31,21 @@ getrealpath ( ) {
 }
 
 gets3src ( ) {
-    output=
+    wd=`pwd`
     scan=
-    if test $# -gt 1; then
-	scan=$1
-	output=$2
-    elif test $# -gt 0; then
+    if test $# -eq 0; then
+	scan=${wd};
+    elif test $# -gt 1; then
 	scan=$1
     else
-	scan=`pwd`
+	scan=$1
     fi;
     if test "${scan}" == "."; then
-	scan=`pwd`;
+	scan=${wd};
     elif test "${scan}" == ".."; then
-	scan=`pwd`;
-	scan=`dirname ${scan}`
+	scan=${wd};
+	scan=`dirname ${scan}`;
     fi
-    # echo scan=${scan}
     scan=`getrealpath ${scan}`
     if test ! -d ${scan}; then
 	base=`basename ${scan}`
@@ -43,7 +54,7 @@ gets3src ( ) {
     else
 	relpath="";
     fi;
-    while ( test ! -z "${scan}" && test ! -f .s3root ); do
+    while ( test ! -z "${scan}" && test "${scan}" != "/" && test ! -f ${scan}/.s3root ); do
 	base=`basename ${scan}`
         if test -z "${relpath}"; then
 	    relpath="${scan}";
@@ -66,30 +77,32 @@ gets3src ( ) {
 }
 
 gets3root ( ) {
-    output=
-    dir=
-    if test $# -gt 1; then
-	dir=$1
-	output=$2
+    wd=`pwd`
+    scan=
+    if test $# -eq 0; then
+	scan=${wd};
+    elif test $# -gt 1; then
+	scan=$1
     else
-	dir=$1
+	scan=$1
     fi;
-    dir=`getrealpath ${dir}`;
+    if test "${scan}" == "."; then
+	scan=${wd};
+    elif test "${scan}" == ".."; then
+	scan=${wd};
+	scan=`dirname ${scan}`;
+    fi
+    scan=`getrealpath ${scan}`;
     if test ! -d ${dir}; then
-	dir=`dirname $dir`;
+	scan=`dirname ${scan}`;
     fi;
-    relpath=""
-    while ( test ! -z "${dir}" && test ! -f .s3root ); do
-	base=`basename ${dir}`;
-	relpath="${base}/${relpath}";
-	dir=`dirname ${dir}`;
+    while ( test ! -z "${scan}" && 
+                test "${scan}" != "/" && 
+                test ! -f .s3root ); do
+	scan=`dirname ${scan}`;
 	done;
-    if test -f ${dir}/.s3root; then
-	if test -z "${output}"; then
-	    printf "%s/" "${dir}";
-	else
-	    printf "%s/" "${dir}" > ${output};
-	fi;
+    if test -f ${scan}/.s3root; then
+	printf "%s/" "${dir}" > ${output};
 	retval=0;
     else
 	retval=1;
@@ -139,10 +152,12 @@ save2s3 ( ) {
 	opts=`gets3opts ${fullpath}`;
         name=`basename ${fullpath}`
         envopts=${S3SCRIPTOPTS}
-	if test -z "${src}"; then
-	    echo "Warning: the path ${path} was not checked out of S3!";
+        if test ! -f "${fullpath}"; then
+            echo "The file ${fullpath} does not exist";
+	elif test -z "${src}"; then
+	    echo "Warning: the path '${path}' was not checked out of S3!";
 	   retval=1;
-	elif ${AWS} s3 cp ${envopts} ${opts} ${fullpath} ${src}; then
+	elif awscmd s3 cp ${envopts} ${opts} ${fullpath} ${src}; then
 	   retval=0;
 	else
 	   retval=1;

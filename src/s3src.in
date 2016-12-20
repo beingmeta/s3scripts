@@ -1,7 +1,7 @@
 if test $# -eq 0; then
-    gets3root `pwd`;
+    gets3src `pwd`;
 else
-    gets3root $1;
+    gets3src $1;
 fi
 
 ###  Local variables: ***

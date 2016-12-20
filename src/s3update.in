@@ -18,15 +18,16 @@ fi;
 if test "${UPDATEROOT}" = "yes"; then
     LOCAL=`gets3root ${LOCAL}`
 fi
-if ! (s3root ${LOCAL} /dev/null); then
-    echo 'This directory was not checked out of s3'; 
-    exit 1;
-else
-   S3SRC=`gets3src ${LOCAL}`
-   ROOTDIR=`gets3root ${LOCAL}`
-fi
+S3SRC=`gets3src ${LOCAL}`;
+ROOTDIR=`gets3root ${LOCAL}`;
 s3opts=`gets3opts ${ROOTDIR}`;
-${AWS} s3 sync ${S3SCRIPTOPTS} ${S3UPDATEOPTS} ${s3opts} ${S3SRC} ${LOCAL}/
+if test ! -z ${S3SRC}; then
+    awsexec s3 sync ${S3SCRIPTOPTS} ${S3UPDATEOPTS} ${s3opts} \
+            ${S3SRC} ${LOCAL}/;
+else
+    echo "The directory '${LOCAL}' was not checked out of s3"; 
+    exit 1;
+fi
 
 ###  Local variables: ***
 ###  compile-command: "if test -f ../makefile; then cd ..; make scripts; fi;" ***
