@@ -1,5 +1,3 @@
-#!/bin/sh
-
 S3PATH=$1
 if test $# -eq 2; then
     LOCALPATH=$2; shift; shift;
@@ -22,5 +20,9 @@ if test -f ${LOCALPATH}/.s3root; then
 fi; 
 echo ${S3PATH} > ${LOCALPATH}/.s3root;
 echo ${S3OPTS} > ~/.s3opts;
-exec aws s3 cp --recursive ${AWS3OPTS} ${S3OPTS} ${S3PATH} ${LOCALPATH};
+${AWS} s3 cp --recursive ${AWS3OPTS} ${S3OPTS} ${S3PATH} ${LOCALPATH};
 
+###  Local variables: ***
+###  compile-command: "if test -f ../makefile; then cd ..; make scripts; fi;" ***
+###  indent-tabs-mode: nil ***
+###  End: ***

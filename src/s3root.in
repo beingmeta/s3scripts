@@ -1,0 +1,18 @@
+if test $# -eq 0; then
+    if gets3root `pwd`; then
+	exit 0;
+    else
+	exit 1;
+    fi;
+else
+    if gets3root $1; then
+	exit 0;
+    else
+	exit 1;
+    fi;
+fi
+    
+###  Local variables: ***
+###  compile-command: "if test -f ../makefile; then cd ..; make scripts; fi;" ***
+###  indent-tabs-mode: nil ***
+###  End: ***

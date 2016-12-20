@@ -1,0 +1,15 @@
+if test $# -eq 0; then
+    echo "Usage: s3commit [*file*] [*more files*...]";
+    exit 1;
+else for path in $*; do 
+	 if ! save2s3 ${path}; then
+	     echo "Failed to save ${path}, exiting";
+	     exit 1;
+	 fi;
+     done;
+fi;
+
+###  Local variables: ***
+###  compile-command: "if test -f ../makefile; then cd ..; make scripts; fi;" ***
+###  indent-tabs-mode: nil ***
+###  End: ***

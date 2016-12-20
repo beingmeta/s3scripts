@@ -1,4 +1,3 @@
-#!/bin/sh
 LOCAL=`pwd`
 S3OPTS=$*
 if test -f ${LOCAL}/.s3root; then
@@ -14,5 +13,9 @@ else
     echo "This directory (${LOCAL}) was not checked out of S3";
 fi;
 
+###  Local variables: ***
+###  compile-command: "if test -f ../makefile; then cd ..; make scripts; fi;" ***
+###  indent-tabs-mode: nil ***
+###  End: ***
      
 
