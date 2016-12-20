@@ -7,6 +7,7 @@ INSTALLED=${INSTALLDIR}/s3checkout ${INSTALLDIR}/s3update ${INSTALLDIR}/s3commit
 INSTALL := $(shell which install)
 INSTALL_FLAGS=
 MANDIR := ${INSTALLDIR}/../man/
+CLEAN = rm -f
 
 src/%: src/%.in src/header.sh
 	@cat src/header.sh $< > $@
@@ -20,13 +21,23 @@ build scripts: ${SCRIPTS}
 
 install: ${INSTALLED}
 
+tidy:
+	@${CLEAN} *~ src/*~ docs/*~ docs/ronn/*~ docs/man/*~
+	@${CLEAN} docs/man.html/*~ docs/man.html.include/*~
+	@${CLEAN} #*# src/#*# docs/#*# docs/ronn/#*# docs/man/#*#
+	@${CLEAN} docs/man.html/#*# docs/man.html.include/#*#
+
+
 clean:
-	@rm -f ${SCRIPTS}
+	@${CLEAN} ${SCRIPTS} 
+	@${CLEAN} docs/man/*.1 docs/man/*.gz
+	@${CLEAN} docs/man.html/*.html docs/man.html.include/*.html
 
 docs:
 	@cd docs; make
 
 install-docs: docs man.gz
+	@${INSTALL} -d ${MANDIR}/man1
 	@${INSTALL} docs/man/*.1.gz ${MANDIR}/man1
 
 manpages:
