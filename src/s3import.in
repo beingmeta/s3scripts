@@ -1,0 +1,22 @@
+## -*- Mode: shell-script; -*-
+
+s3path=$1
+localpath=$2
+wd=`pwd`
+
+if test -z "${s3path}"; then
+    echo "Usage: s3import <s3path> [localpath]";
+    exit;
+fi
+if test -z "${localpath}"; then
+    localpath=${wd};
+else
+    localpath=getrealpath "${localpath}" "${wd}";
+fi;
+
+${AWS} s3 sync ${localpath} ${s3path}
+
+###  Local variables: ***
+###  compile-command: "if test -f ../makefile; then cd ..; make scripts; fi;" ***
+###  indent-tabs-mode: nil ***
+###  End: ***

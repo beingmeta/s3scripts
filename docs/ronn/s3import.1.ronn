@@ -1,0 +1,44 @@
+[comment]: # ( -*- Mode: markdown; -*- )
+s3import(1) -- import a local file tree to S3
+=========================================
+
+## SYNOPSIS
+
+`s3import` <*s3 path*> [*local directory*] 
+
+## DESCRIPTION
+
+This command imports a tree from the local file system into S3. It is
+essentialy a lightweight wrapper around `s3 aws sync` from the local
+path to the remote path.
+
+## FILES
+
+The `aws` command normally references config files in the user's home
+directory, either `~/.aws-config` or files in the `~/.aws`
+directory. These can specify AWS regions, credentials, or other
+information.
+
+## ENVIRONMENT
+
+The `aws` command may also use environment variables. These can
+specify AWS regions, credentials, or other information.
+
+## DIAGNOSTICS
+
+A usage message is emitted if arguments are missing or clearly
+incomplete. Otherwise, diagnostics may come from the AWS command line
+program.
+
+#BUGS
+
+None that are known of
+
+# AUTHOR
+
+Ken Haase <kh@beingmeta.com>
+
+## SEE ALSO
+
+s3scripts(7), s3update(1)
+

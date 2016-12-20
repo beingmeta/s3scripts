@@ -1,7 +1,7 @@
 RONN_MANUAL       = S3Scripts
 RONN_ORGANIZATION = beingmeta.com
 
-PAGES=s3checkout.1 s3update.1 s3commit.1 s3src.1 s3root.1 s3setroot.1 s3setopts.1
+PAGES=s3checkout.1 s3update.1 s3commit.1 s3src.1 s3root.1 s3setroot.1 s3setopts.1 s3import.1
 
 # We end things with \c to avoid breaking things up with newlines
 MANPAGES=$(shell for page in ${PAGES}; do echo man/$${page}; done )

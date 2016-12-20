@@ -6,10 +6,10 @@ AWS=${AWS:-${DEFAULT_AWS}}
 echo AWS=${AWS}
 
 getrealpath ( ) {
-    path=$1
-    pwd=`pwd`
-    abspath=`echo ${path} | sed -e "s;\(^[^/]\);${pwd}/\1;";`
-    realpath=`readlink ${abspath}`
+    path=$1;
+    pwd=${2:-`pwd`};
+    abspath=`echo ${path} | sed -e "s;\(^[^/]\);${pwd}/\1;" | sed -e "s;/./;/;" | sed -e "s;/[^/]+/../;/;"`
+    realpath=`readlink ${abspath}`;
     if test -z "${realpath}"; then 
 	echo ${abspath}; 
     else
