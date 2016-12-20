@@ -50,7 +50,7 @@ install-docs: docs man.gz
 manpages:
 	@cd docs; make man.gz
 
-install-manpages: manpages
+install-man install-manpages: manpages
 	@${INSTALL} docs/man/*.1.gz ${MANDIR}/man1
 
 .PHONY: build scripts install clean docs install-docs
