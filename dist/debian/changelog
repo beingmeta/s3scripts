@@ -1,0 +1,6 @@
+s3scripts (0.8-1) stable; urgency=low
+
+  * First debian packaging
+
+ -- Ken Haase <kh@beingmeta.com>  Sun, 09 Oct 2016 17:50:05 -0400
+
