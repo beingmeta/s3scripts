@@ -1,6 +1,8 @@
-usr/bin/upsource
-usr/lib/upsource/sourcetab.awk
-usr/lib/upsource/handlers/link.upsource
-usr/lib/upsource/handlers/pre.sh
-usr/lib/upsource/handlers/post.sh
-etc/upsource.d/config
+usr/bin/s3checkout
+usr/bin/s3update
+usr/bin/s3commit
+usr/bin/s3setroot
+usr/bin/s3setopts
+usr/bin/s3import
+usr/bin/s3root
+usr/bin/s3src

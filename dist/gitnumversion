@@ -1,0 +1,5 @@
+WD = `pwd`
+PACKAGE = ${1:`basename ${WD}}
+git describe | sed -e "s/-g[0123456789ABCDEFabcdef]*$//" -e "s/${PACKAGE}-//g" -e "s/-[[:digit:]]\+//g"
+
+

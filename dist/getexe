@@ -1,0 +1,14 @@
+#!/bin/sh
+## -*- Mode: shell-script; -*-
+if test $# -eq 0; then
+    echo "Usage: getexedir *appname* [default]";
+    exit;
+fi
+APP=$1;
+DEFAULT=${2:-/usr/bin};
+if which ${APP} 2>&1 > /dev/null; then
+    which ${APP};
+else
+    echo ${DEFAULT}/${APP};
+fi
+
