@@ -154,32 +154,6 @@ gets3opts ( ) {
     fi;
 }
 
-save2s3 ( ) {
-    path=$1;
-    retval=1;
-    if test -f ${path}; then
-	fullpath=`getrealpath ${path}`;
-	src=`gets3src ${fullpath}`;
-	opts=`gets3opts ${fullpath}`;
-        name=`basename ${fullpath}`
-        envopts=${S3SCRIPTOPTS}
-        if test ! -f "${fullpath}"; then
-            echo "The file ${fullpath} does not exist";
-	elif test -z "${src}"; then
-	    echo "Warning: the path '${path}' was not checked out of S3!";
-	   retval=1;
-	elif awscmd s3 cp ${envopts} ${opts} ${fullpath} ${src}; then
-	   retval=0;
-	else
-	   retval=1;
-	fi;
-    elif test -d ${path}; then
-	 echo "The path ${path} is a directory";
-    else
-	echo "The path ${path} does not exist";
-    fi;
-}
-
 s3check ( ) {
     file=$1;
     s3src=`gets3src ${file}`;
