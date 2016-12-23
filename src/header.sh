@@ -18,6 +18,16 @@ awsexec () {
     exec ${AWS} $*;
 }
 
+mkpath ( ) {
+    dir=$1;
+    path=$2;
+    if echo ${dir} | grep "/$" 2>&1 > /dev/null; then
+        echo ${dir}${path};
+    else
+        echo ${dir}/${path};
+    fi;
+}
+
 getrealpath ( ) {
     path=$1;
     pwd=${2:-`pwd`};
@@ -65,10 +75,11 @@ gets3src ( ) {
     done;
     if test -f ${scan}/.s3root; then
 	s3root=`cat ${scan}/.s3root`
+        savepath=`mkpath ${s3root} ${relpath}`
 	if test -z "${output}"; then
-	    printf "%s\\n" "${s3root}/${relpath}";
+	    printf "%s\\n" "${savepath}";
 	else
-	    printf "%s\\n" "${s3root}/${relpath}" > ${output};
+	    printf "%s\\n" "${savepath}" > ${output};
 	    retval=0;
 	fi
     else
@@ -166,6 +177,16 @@ save2s3 ( ) {
 	 echo "The path ${path} is a directory";
     else
 	echo "The path ${path} does not exist";
+    fi;
+}
+
+s3check ( ) {
+    file=$1;
+    s3src=`gets3src ${file}`;
+    if test -z ${s3src}; then
+        retval=0;
+    else
+        retval=1;
     fi;
 }
 
