@@ -41,12 +41,13 @@ ${INSTALLDIR}/%: src/%
 	@${INSTALL} ${INSTALLFLAGS} -m 775 $< $@
 	@echo Installed $< to $@
 
-${INSTALLDIR}:
-	@${INSTALL} -d ${INSTALLFLAGS} $@
+# The default
 
-build scripts: ${SCRIPTS}
+default build scripts: ${SCRIPTS}
 
-install: ${INSTALLDIR} ${INSTALLED} install-docs
+.PHONY: build scripts default
+
+# Getting rid of stuff
 
 uninstall:
 	rm -f ${INSTALLED}
@@ -62,20 +63,33 @@ clean:
 	@${CLEAN} docs/man/*.1 docs/man/*.gz
 	@${CLEAN} docs/man.html/*.html docs/man.html.include/*.html
 
+.PHONY:  uninstall clean tidy
+
+# Documentation
+
 docs:
 	@cd docs; make
+
+manpages:
+	@cd docs; make man.gz
+
+.PHONY: docs install-docs
+
+# Installation
+
+install: ${INSTALLDIR} ${INSTALLED} install-docs
+
+${INSTALLDIR}:
+	@${INSTALL} -d ${INSTALLFLAGS} $@
 
 install-docs: ${INSTALLDIR} docs manpages
 	@${INSTALL} -d ${MANDIR}/man1
 	@${INSTALL} docs/man/*.1.gz ${MANDIR}/man1
 
-manpages:
-	@cd docs; make man.gz
-
 install-man install-manpages: manpages
 	@${INSTALL} docs/man/*.1.gz ${MANDIR}/man1
 
-.PHONY: build scripts install clean docs install-docs
+.PHONY: install install-docs install-man install-manpages 
 
 # Packaging
 
