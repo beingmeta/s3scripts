@@ -1,16 +1,21 @@
-## -*- Mode: shell-script; ##
+## -*- Mode: shell-script; -*- ##
+envopts=${S3SCRIPTOPTS}
+
 if test $# -eq 0; then
     echo "Usage: s3commit [*file*] [*more files*...]";
     exit 1;
 else for path in $*; do 
-         if s3check ${path}; then
-             if ! save2s3 ${path}; then
+         fullpath=`getrealpath ${path}`;
+	 srcpath=`gets3src ${fullpath}`;
+	 opts=`gets3opts ${fullpath}`;
+         if test ! -z ${srcpath}; then
+             if ! awscmd s3 cp ${envopts} ${opts} ${fullpath} ${srcpath}; then
 	         echo "Failed to save ${path}, exiting";
                  exit 1;
 	     fi;
          else
-	     echo The path ${path} was not checkout out of S3";
-	 fi;  
+	     echo The path ${path} was not checkout out of S3;
+         fi;
      done;
 fi;
 
