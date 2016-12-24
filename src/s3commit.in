@@ -8,8 +8,14 @@ else for path in $*; do
          fullpath=`getrealpath ${path}`;
 	 srcpath=`gets3src ${fullpath}`;
 	 opts=`gets3opts ${fullpath}`;
+	 grants=`gets3grants ${fullpath}`;
+         grants_opt=""
+         if test ! -z ${grants}; then
+            grants_opt="--grants ${grants}";
+         fi;
+         echo aws s3 cp ${envopts} ${opts} ${fullpath} ${srcpath} ${grants_opt}; 
          if test ! -z ${srcpath}; then
-             if ! awscmd s3 cp ${envopts} ${opts} ${fullpath} ${srcpath}; then
+             if ! awscmd s3 cp ${envopts} ${opts} ${fullpath} ${srcpath} ${grants_opt}; then
 	         echo "Failed to save ${path}, exiting";
                  exit 1;
 	     fi;

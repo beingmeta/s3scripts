@@ -14,18 +14,14 @@ awscmd () {
 awsexec () {
     if test ! -z "${SHOW_CMD}"; then
         echo ${AWS} $*;
-    fi
+    fi;
     exec ${AWS} $*;
 }
 
 mkpath ( ) {
-    dir=$1;
+    dir=`echo $1 | sed -e "s;/$;;"`;
     path=$2;
-    if echo ${dir} | grep "/$" 2>&1 > /dev/null; then
-        echo ${dir}${path};
-    else
-        echo ${dir}/${path};
-    fi;
+    echo ${dir}/${path};
 }
 
 getrealpath ( ) {
@@ -44,11 +40,11 @@ gets3src ( ) {
     wd=`pwd`
     scan=
     if test $# -eq 0; then
-	scan=${wd};
+	scan="${wd}";
     elif test $# -gt 1; then
-	scan=$1
+	scan=$1;
     else
-	scan=$1
+	scan=$1;
     fi;
     if test "${scan}" == "."; then
 	scan=${wd};
@@ -118,6 +114,24 @@ gets3root ( ) {
     else
 	retval=1;
     fi;
+}
+
+gets3grants ( ) {
+    scan=$1;
+    if test ! -d ${scan}; then
+        scan=`dirname ${scan}`;
+    else
+        scan=`mkpath ${scan}`;
+    fi;
+    while test ${scan} != "/"; do
+        if test -f ${scan}/.s3grants; then
+           cat ${scan}/.s3grants;
+           exit;
+        elif test -f ${scan}/.s3root; then
+           exit;
+        fi;
+        scan=`dirname ${scan}`;
+    done;
 }
 
 gets3opts ( ) {
