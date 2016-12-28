@@ -8,6 +8,8 @@ MANDIR 		:= ${INSTALLDIR}/../man/
 INSTALL 	:= $(shell which install)
 INSTALL_FLAGS	=
 CLEAN 		= rm -f
+APTREPO   	= /srv/repo/apt
+APTREPO   	= /srv/repo/apt
 YUMREPO   	= dev:/srv/repo/yum/beingmeta/noarch
 YUMHOST   	= dev
 YUMUPDATE 	= /srv/repo/scripts/freshyum
@@ -18,6 +20,7 @@ RELEASE=$(shell dist/gitnumrelease s3scripts)
 
 GPG=$(shell which gpg2 || which gpg || echo gpg)
 GPGID=repoman@beingmeta.com
+
 CODENAME=beingmeta
 
 SCRIPTS=src/s3checkout src/s3update src/s3commit 	\
@@ -114,17 +117,24 @@ dist/debs.signed: dist/debs.built
 
 debian debs dpkgs: dist/debs.signed
 
-dist/debs.uploaded: dist/debs.signed
+update-local-apt-repo: dist/debs.done
+	for change in dist/*.changes; do \
+	  reprepro -Vb ${APTREPO} include ${CODENAME} $${change} && \
+	  rm -f $${change}; \
+	done
+
+update-remote-apt-repo: dist/debs.done
 	cd dist; for change in *.changes; do \
 	  dupload -c --nomail --to ${CODENAME} $${change} && \
 	  rm -f $${change}; \
 	done
-	touch $@
 
-upload-debs upload-deb: dist/debs.uploaded
-
-update-apt: dist/debs.uploaded
-	ssh dev /srv/repo/apt/scripts/getincoming
+update-apt update-apt-repo: dist/debs.done
+	if test -d ${APTREPO}; then	\
+	  make update-local-apt-repo;	\
+	else				\
+	  make update-remote-apt-repo;	\
+	fi;
 
 debclean:
 	rm -rf dist/s3scripts-* dist/debs.* dist/*.deb dist/*.changes
