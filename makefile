@@ -115,7 +115,10 @@ dist/debs.signed: dist/debs.built
 	(cd dist; debsign --re-sign -k${GPGID} s3scripts_*_all.changes) && \
 	touch $@;
 
-debian debs dpkgs: dist/debs.signed
+dist/debs.done: dist/debs.signed
+	touch $@;
+
+debian debs dpkgs: dist/debs.done
 
 update-local-apt-repo: dist/debs.done
 	for change in dist/*.changes; do \
