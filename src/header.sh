@@ -46,9 +46,9 @@ gets3src ( ) {
     else
 	scan=$1;
     fi;
-    if test "${scan}" == "."; then
+    if test "${scan}" = "."; then
 	scan=${wd};
-    elif test "${scan}" == ".."; then
+    elif test "${scan}" = ".."; then
 	scan=${wd};
 	scan=`dirname ${scan}`;
     fi
@@ -72,12 +72,8 @@ gets3src ( ) {
     if test -f ${scan}/.s3root; then
 	s3root=`cat ${scan}/.s3root`
         savepath=`mkpath ${s3root} ${relpath}`
-	if test -z "${output}"; then
-	    printf "%s\\n" "${savepath}";
-	else
-	    printf "%s\\n" "${savepath}" > ${output};
-	    retval=0;
-	fi
+	printf "%s\\n" "${savepath}";
+        retval=0
     else
 	retval=1
     fi;
@@ -93,9 +89,9 @@ gets3root ( ) {
     else
 	scan=$1
     fi;
-    if test "${scan}" == "."; then
+    if test "${scan}" = "."; then
 	scan=${wd};
-    elif test "${scan}" == ".."; then
+    elif test "${scan}" = ".."; then
 	scan=${wd};
 	scan=`dirname ${scan}`;
     fi
@@ -109,7 +105,7 @@ gets3root ( ) {
 	scan=`dirname ${scan}`;
 	done;
     if test -f ${scan}/.s3root; then
-	printf "%s/" "${dir}" > ${output};
+	printf "%s/" "${dir}"
 	retval=0;
     else
 	retval=1;
