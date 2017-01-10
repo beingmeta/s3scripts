@@ -11,10 +11,17 @@ fi
 if test -z "${localpath}"; then
     localpath=${wd};
 else
-    localpath=getrealpath "${localpath}" "${wd}";
+    localpath=`getrealpath "${localpath}" "${wd}"`;
 fi;
 
-${AWS} s3 sync ${localpath} ${s3path}
+if test -f ${localpath}/.s3root; then
+    echo "# (s3import) An existing .s3root exists in ${localpath}";
+    echo "# (s3import) Remove ${localpath}/.s3root to proceed";
+    exit;
+fi;
+
+awscmd s3 sync ${localpath} ${s3path}
+echo ${s3root} > ${localpath}/.s3root
 
 ###  Local variables: ***
 ###  compile-command: "if test -f ../makefile; then cd ..; make scripts; fi;" ***

@@ -1,5 +1,7 @@
 LOCAL=`pwd`
 S3OPTS=$*
+if test -f ${LOCAL}/.s3opts; then
+   echo "# (s3setopts)" Replacing existing .s3opts=" `cat ${LOCAL}/.s3opts`;
 if test -f ${LOCAL}/.s3root; then
     BASEOPTS=
     if test "$1" = "add" && test -f ${LOCAL}/.s3opts; then 
@@ -8,9 +10,9 @@ if test -f ${LOCAL}/.s3root; then
 	BASEOPTS=${S3SCRIPTOPTS}
     fi;
     echo ${BASEOPTS} ${S3OPTS} > ${LOCAL}/.s3opts;
-    echo "New S3 opts are:" ${BASEOPTS} ${S3OPTS};
+    echo "# (s3setopts) New S3 opts are:" ${BASEOPTS} ${S3OPTS};
 else
-    echo "This directory (${LOCAL}) was not checked out of S3";
+   
 fi;
 
 ###  Local variables: ***

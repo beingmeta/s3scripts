@@ -38,6 +38,7 @@ INSTALLED=${INSTALLDIR}/s3checkout 	\
 src/%: src/%.in src/header.sh
 	@cat src/header.sh $< > $@
 	@chmod a+x $@
+	@echo "# (s3scripts/makefile) Generated $@";
 
 ${INSTALLDIR}/%: src/%
 	@echo Installing $< to $@ using ${INSTALLDIR} and '${DESTDIR}'
