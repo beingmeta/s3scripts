@@ -63,9 +63,9 @@ gets3src ( ) {
     while ( test ! -z "${scan}" && test "${scan}" != "/" && test ! -f ${scan}/.s3root ); do
 	base=`basename ${scan}`
         if test -z "${relpath}"; then
-	    relpath="${scan}";
+	    relpath="${base}";
         else
-	    relpath="${scan}/${relpath}";
+	    relpath="${base}/${relpath}";
         fi;
 	scan=`dirname ${scan}`
     done;
