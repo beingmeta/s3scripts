@@ -1,18 +1,18 @@
-#!/bin/sh
-LOCAL=`pwd`
+## -*- Mode: shell-script; -*- ##
+LOCAL=$(pwd)
 S3ROOT=$1; shift
 S3OPTS=$*
-if test -f ${LOCAL}/.s3root; then
-   echo "# (s3setroot) Replacing existing .s3root" `cat ${LOCAL}/.s3root`;
+if [ -f ${LOCAL}/.s3root ]; then
+   echo "# (s3setroot) Replacing existing .s3root" $(cat ${LOCAL}/.s3root);
 fi
 echo ${S3ROOT} > ${LOCAL}/.s3root;
-echo "# (s3setroot) Set .s3root to" `cat ${LOCAL}/.s3root`;
-if test $# -gt 0; then
-    if test -f ${LOCAL}/.s3opts; then
-	echo "# (s3setroot) Replacing existing .s3opts=" `cat ${LOCAL}/.s3opts`;
+echo "# (s3setroot) Set .s3root to" $(cat ${LOCAL}/.s3root);
+if [ $# -gt 0 ]; then
+    if [ -f ${LOCAL}/.s3opts ]; then
+	echo "# (s3setroot) Replacing existing .s3opts=" $(cat ${LOCAL}/.s3opts);
     fi;
     echo ${BASEOPTS} ${S3OPTS} > ${LOCAL}/.s3opts;
-    echo "# (sets3root) Set .s3opts to" `cat ${LOCAL}/.s3opts`;
+    echo "# (sets3root) Set .s3opts to" $(cat ${LOCAL}/.s3opts);
 fi;
      
 

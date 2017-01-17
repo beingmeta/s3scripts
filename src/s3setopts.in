@@ -1,12 +1,14 @@
-LOCAL=`pwd`
+## -*- Mode: shell-script; -*- ##
+
+LOCAL=$(pwd)
 S3OPTS=$*
-if test -f ${LOCAL}/.s3opts; then
+if [ -f ${LOCAL}/.s3opts ]; then
    echo "# (s3setopts)" Replacing existing .s3opts=" `cat ${LOCAL}/.s3opts`;
-if test -f ${LOCAL}/.s3root; then
+if [ -f ${LOCAL}/.s3root ]; then
     BASEOPTS=
-    if test "$1" = "add" && test -f ${LOCAL}/.s3opts; then 
+    if [ "$1" = "add" ] && [ -f ${LOCAL}/.s3opts ]; then 
 	BASEOPTS=`cat ${LOCAL}/.s3opts`; shift; S3OPTS=$*;
-    elif test "$1" = "defaults"; then
+    elif [ "$1" = "defaults" ]; then
 	BASEOPTS=${S3SCRIPTOPTS}
     fi;
     echo ${BASEOPTS} ${S3OPTS} > ${LOCAL}/.s3opts;
@@ -16,7 +18,7 @@ else
 fi;
 
 ###  Local variables: ***
-###  compile-command: "if test -f ../makefile; then cd ..; make scripts; fi;" ***
+###  compile-command: "if [ -f ../makefile ]; then cd ..; make scripts; fi;" ***
 ###  indent-tabs-mode: nil ***
 ###  End: ***
      

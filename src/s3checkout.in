@@ -1,20 +1,22 @@
+## -*- Mode: shell-script; -*-
+
 S3PATH=$1
-if test $# -eq 2; then
+if [ $# -eq 2 ]; then
     LOCALPATH=$2; shift; shift;
 else
-    LOCALPATH=./`basename ${S3PATH}`;
+    LOCALPATH=./$(basename ${S3PATH});
     shift;
 fi
 S3OPTS="${S3BASEOPTS:-$S3DEFAULTOPTS} $*";
-if test ! -d ${LOCALPATH}; then
-    if test -f ${LOCALPATH}; then
+if [ ! -d ${LOCALPATH} ]; then
+    if [ -f ${LOCALPATH} ]; then
 	echo "${LOCALPATH} already exists and is not a directory";
 	exit;
     else
 	mkdir ${LOCALPATH}; 
     fi
 fi;
-if test -f ${LOCALPATH}/.s3root; then
+if [ -f ${LOCALPATH}/.s3root ]; then
     echo "Overwriting ${LOCALPATH}/.s3root, saving into ${LOCALPATH}/.s3root.bak";
     mv ${LOCALPATH}/.s3root ${LOCALPATH}/.s3root.bak
 fi; 
@@ -23,6 +25,6 @@ echo ${S3OPTS} > ~/.s3opts;
 awscmd s3 cp --recursive ${AWS3OPTS} ${S3OPTS} ${S3PATH} ${LOCALPATH};
 
 ###  Local variables: ***
-###  compile-command: "if test -f ../makefile; then cd ..; make scripts; fi;" ***
+###  compile-command: "if [ -f ../makefile ]; then cd ..; make scripts; fi;" ***
 ###  indent-tabs-mode: nil ***
 ###  End: ***

@@ -1,19 +1,19 @@
 ## -*- Mode: shell-script; -*- ##
 envopts=${S3SCRIPTOPTS}
 
-if test $# -eq 0; then
+if [ $# -eq 0 ]; then
     echo "Usage: s3commit [*file*] [*more files*...]";
     exit 1;
 else for path in $*; do 
-         fullpath=`getrealpath ${path}`;
-	 srcpath=`gets3src ${fullpath}`;
-	 opts=`gets3opts ${fullpath}`;
-	 grants=`gets3grants ${fullpath}`;
+         fullpath=$(getrealpath ${path});
+	 srcpath=$(gets3src ${fullpath});
+	 opts=$(gets3opts ${fullpath});
+	 grants=$(gets3grants ${fullpath});
          grants_opt=""
-         if test ! -z ${grants}; then
+         if [ ! -z ${grants} ]; then
             grants_opt="--grants ${grants}";
          fi;
-         if test ! -z ${srcpath}; then
+         if [ ! -z ${srcpath} ]; then
              if ! awscmd s3 cp ${envopts} ${opts} ${fullpath} ${srcpath} ${grants_opt}; then
 	         echo "Failed to save ${path}, exiting";
                  exit 1;
@@ -25,6 +25,6 @@ else for path in $*; do
 fi;
 
 ###  Local variables: ***
-###  compile-command: "if test -f ../makefile; then cd ..; make scripts; fi;" ***
+###  compile-command: "if [ -f ../makefile ]; then cd ..; make scripts; fi;" ***
 ###  indent-tabs-mode: nil ***
 ###  End: ***

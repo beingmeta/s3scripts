@@ -1,10 +1,12 @@
-if test $# -eq 0; then
-    gets3src `pwd`;
+## -*- Mode: shell-script; -*- ##
+
+if [ $# -eq 0 ]; then
+    gets3src $(pwd);
 else
     gets3src $1;
 fi
 
 ###  Local variables: ***
-###  compile-command: "if test -f ../makefile; then cd ..; make scripts; fi;" ***
+###  compile-command: "if [ -f ../makefile ]; then cd ..; make scripts; fi;" ***
 ###  indent-tabs-mode: nil ***
 ###  End: ***

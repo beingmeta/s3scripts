@@ -2,27 +2,27 @@
 UPDATEROOT=no
 UPDATETREE=yes
 
-if test "$1" = "--root"; then
+if [ "$1" = "--root" ]; then
     UPDATEROOT="yes"
     shift;
 fi;
-if test "$1" = "--current"; then
+if [ "$1" = "--current" ]; then
     UPDATETREE="no"
     shift;
 fi;
-if test $# -eq 0 || test "$1" = "."; then
-    LOCAL=`pwd`;
-elif test "$1" = ".."; then
-    LOCAL=`pwd`;
-    LOCAL=`dirname ${thisdir}`;
+if [ $# -eq 0 ] || [ "$1" = "." ]; then
+    LOCAL=$(pwd);
+elif [ "$1" = ".." ]; then
+    LOCAL=$(pwd);
+    LOCAL=$(dirname ${thisdir});
 fi;
-if test "${UPDATEROOT}" = "yes"; then
-    LOCAL=`gets3root ${LOCAL}`
+if [ "${UPDATEROOT}" = "yes" ]; then
+    LOCAL=$(gets3root ${LOCAL});
 fi
-S3SRC=`gets3src ${LOCAL}`;
-ROOTDIR=`gets3root ${LOCAL}`;
-s3opts=`gets3opts ${ROOTDIR}`;
-if test ! -z ${S3SRC}; then
+S3SRC=$(gets3src ${LOCAL});
+ROOTDIR=$(gets3root ${LOCAL});
+s3opts=$(gets3opts ${ROOTDIR});
+if [ ! -z ${S3SRC} ]; then
     awsexec s3 sync ${S3SCRIPTOPTS} ${S3UPDATEOPTS} ${s3opts} \
             ${S3SRC} ${LOCAL}/;
 else
@@ -31,6 +31,6 @@ else
 fi
 
 ###  Local variables: ***
-###  compile-command: "if test -f ../makefile; then cd ..; make scripts; fi;" ***
+###  compile-command: "if [ -f ../makefile  ]; then cd ..; make scripts; fi;" ***
 ###  indent-tabs-mode: nil ***
 ###  End: ***

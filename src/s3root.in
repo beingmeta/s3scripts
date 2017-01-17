@@ -1,5 +1,7 @@
-if test $# -eq 0; then
-    if gets3root `pwd`; then
+## -*- Mode: shell-script; -*- ##
+
+if [ $# -eq 0 ]; then
+    if gets3root $(pwd); then
 	exit 0;
     else
 	exit 1;

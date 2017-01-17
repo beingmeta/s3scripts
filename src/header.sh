@@ -1,35 +1,61 @@
 #!/bin/sh
 
-DEFAULT_AWS=`which aws`;
+DEFAULT_AWS=$(which aws);
 SHOW_CMD=
 AWS=${AWS:-${DEFAULT_AWS}}
 
 awscmd () {
-    if test ! -z "${SHOW_CMD}"; then
+    if [ ! -z "${SHOW_CMD}" ]; then
         echo ${AWS} $*;
     fi
     ${AWS} $*;
 }
 
 awsexec () {
-    if test ! -z "${SHOW_CMD}"; then
+    if [ ! -z "${SHOW_CMD}" ]; then
         echo ${AWS} $*;
     fi;
     exec ${AWS} $*;
 }
 
 mkpath ( ) {
-    dir=`echo $1 | sed -e "s;/$;;"`;
+    dir=$(echo $1 | sed -e "s;/$;;");
     path=$2;
     echo ${dir}/${path};
 }
 
+hasprefix( ) {
+    str=$1
+    prefix=$2;
+    if echo ${str} | grep "^${prefix}" > /dev/null; then
+        return 0;
+    else
+        return 1;
+    fi;
+}
+
+hassuffix( ) {
+    str=$1
+    suffix=$2;
+    if echo ${str} | grep "${suffix}$" > /dev/null; then
+        return 0;
+    else
+        return 1;
+    fi;
+}
+
 getrealpath ( ) {
     path=$1;
-    pwd=${2:-`pwd`};
-    abspath=`echo ${path} | sed -e "s;\(^[^/]\);${pwd}/\1;" | sed -e "s;/./;/;" | sed -e "s;/[^/]+/../;/;"`
-    realpath=`readlink ${abspath}`;
-    if test -z "${realpath}"; then 
+    pwd=${2:-$(pwd)};
+    if hasprefix "${path}" "/"; then
+        abspath="${path}";
+    elif hassuffix "${path}" "/"; then
+         abspath="${pwd}${path}";
+    else
+        abspath="${pwd}/${path}";
+    fi;
+    realpath=$(readlink ${abspath});
+    if [ -z "${realpath}" ]; then 
 	echo ${abspath}; 
     else
 	echo ${realpath}; 
@@ -37,41 +63,46 @@ getrealpath ( ) {
 }
 
 gets3src ( ) {
-    wd=`pwd`
+    wd=$(pwd)
     scan=
-    if test $# -eq 0; then
+    if [ $# -eq 0 ]; then
 	scan="${wd}";
-    elif test $# -gt 1; then
+    elif [ $# -gt 1 ]; then
 	scan=$1;
     else
 	scan=$1;
     fi;
-    if test "${scan}" = "."; then
+    if [ "${scan}" = "." ]; then
 	scan=${wd};
-    elif test "${scan}" = ".."; then
+    elif [ "${scan}" = ".." ]; then
 	scan=${wd};
-	scan=`dirname ${scan}`;
+	scan=$(dirname ${scan});
     fi
-    scan=`getrealpath ${scan}`
-    if test ! -d ${scan}; then
-	base=`basename ${scan}`
+    scan=$(getrealpath ${scan})
+    if [ ! -d ${scan} ]; then
+	base=$(basename ${scan})
 	relpath="${base}"
-	scan=`dirname ${scan}`
+	scan=$(dirname ${scan})
     else
 	relpath="";
     fi;
-    while ( test ! -z "${scan}" && test "${scan}" != "/" && test ! -f ${scan}/.s3root ); do
-	base=`basename ${scan}`
-        if test -z "${relpath}"; then
+    while ( [ ! -z "${scan}" ] && [ "${scan}" != "/" ] && [ ! -f ${scan}/.s3root ] ); do
+	base=$(basename ${scan})
+        if [ -z "${relpath}" ]; then
 	    relpath="${base}";
         else
 	    relpath="${base}/${relpath}";
         fi;
-	scan=`dirname ${scan}`
+	scan=$(dirname ${scan})
     done;
-    if test -f ${scan}/.s3root; then
-	s3root=`cat ${scan}/.s3root`
-        savepath=`mkpath ${s3root} ${relpath}`
+    if [ -z "${scan}" ]; then
+        pathroot="";
+    else
+        pathroot="${scan}/";
+    fi;
+    if [ -f ${pathroot}.s3root ]; then
+	s3root=$(cat ${pathroot}.s3root)
+        savepath=$(mkpath ${s3root} ${relpath})
 	printf "%s\\n" "${savepath}";
         retval=0
     else
@@ -80,31 +111,29 @@ gets3src ( ) {
 }
 
 gets3root ( ) {
-    wd=`pwd`
+    wd=$(pwd)
     scan=
-    if test $# -eq 0; then
+    if [ $# -eq 0 ]; then
 	scan=${wd};
-    elif test $# -gt 1; then
+    elif [ $# -gt 1 ]; then
 	scan=$1
     else
 	scan=$1
     fi;
-    if test "${scan}" = "."; then
+    if [ "${scan}" = "." ]; then
 	scan=${wd};
-    elif test "${scan}" = ".."; then
+    elif [ "${scan}" = ".." ]; then
 	scan=${wd};
-	scan=`dirname ${scan}`;
+	scan=$(dirname ${scan});
     fi
-    scan=`getrealpath ${scan}`;
-    if test ! -d ${dir}; then
-	scan=`dirname ${scan}`;
+    scan=$(getrealpath ${scan});
+    if [ ! -d ${dir} ]; then
+	scan=$(dirname ${scan});
     fi;
-    while ( test ! -z "${scan}" && 
-                test "${scan}" != "/" && 
-                test ! -f .s3root ); do
-	scan=`dirname ${scan}`;
+    while ( [ ! -z "${scan}" ] && [ "${scan}" != "/" ] && [ ! -f .s3root ]); do
+	scan=$(dirname ${scan});
 	done;
-    if test -f ${scan}/.s3root; then
+    if [ -f ${scan}/.s3root ]; then
 	printf "%s/" "${dir}"
 	retval=0;
     else
@@ -114,46 +143,46 @@ gets3root ( ) {
 
 gets3grants ( ) {
     scan=$1;
-    if test ! -d ${scan}; then
-        scan=`dirname ${scan}`;
+    if [ ! -d ${scan} ]; then
+        scan=$(dirname ${scan});
     else
-        scan=`mkpath ${scan}`;
+        scan=$(mkpath ${scan});
     fi;
     while test ${scan} != "/"; do
-        if test -f ${scan}/.s3grants; then
+        if [ -f ${scan}/.s3grants ]; then
            cat ${scan}/.s3grants;
            exit;
-        elif test -f ${scan}/.s3root; then
+        elif [ -f ${scan}/.s3root ]; then
            exit;
         fi;
-        scan=`dirname ${scan}`;
+        scan=$(dirname ${scan});
     done;
 }
 
 gets3opts ( ) {
     output=
     dir=
-    if test $# -gt 1; then
+    if [ $# -gt 1 ]; then
 	dir=$1
 	output=$2
     else
 	dir=$1
     fi;
-    dir=`getrealpath ${dir}`
-    if test ! -d ${dir}; then
-	dir=`dirname $dir`;
+    dir=$(getrealpath ${dir})
+    if [ ! -d ${dir} ]; then
+	dir=$(dirname $dir);
     fi;
     relpath=""
-    while ( test ! -z "${dir}" && test ! -f .s3root ); do
-	dir=`dirname ${dir}`;
+    while ( [ ! -z "${dir}" ] && [ ! -f .s3root ] ); do
+	dir=$(dirname ${dir});
     done;
-    if test -f ${dir}/.s3root; then
-	if test -f ${dir}/.s3opts; then
-	    opts=`cat ${dir}/.s3opts`
+    if [ -f ${dir}/.s3root ]; then
+	if [ -f ${dir}/.s3opts ]; then
+	    opts=$(cat ${dir}/.s3opts)
 	else
 	    opts=${S3SCRIPTOPTS}
 	fi;
-	if test -z "${output}"; then
+	if [ -z "${output}" ]; then
 	    printf "%s" "${opts}";
 	else
 	    printf "%s" "${opts}" > ${output};
@@ -166,8 +195,8 @@ gets3opts ( ) {
 
 s3check ( ) {
     file=$1;
-    s3src=`gets3src ${file}`;
-    if test -z ${s3src}; then
+    s3src=$(gets3src ${file});
+    if [ -z ${s3src} ]; then
         retval=0;
     else
         retval=1;
@@ -175,6 +204,6 @@ s3check ( ) {
 }
 
 ###  Local variables: ***
-###  compile-command: "if test -f ../makefile; then cd ..; make scripts; fi;" ***
+###  compile-command: "if [ -f ../makefile ]; then cd ..; make scripts; fi;" ***
 ###  indent-tabs-mode: nil ***
 ###  End: ***
