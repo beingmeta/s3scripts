@@ -1,3 +1,9 @@
+s3scripts (0.8-2) stable; urgency=medium
+
+  * Fix some edge cases for determining the s3root
+
+ -- Ken Haase <kh@beingmeta.com>  Tue, 17 Jan 2017 12:31:57 +0000
+
 s3scripts (0.8-1) stable; urgency=low
 
   * First debian packaging
