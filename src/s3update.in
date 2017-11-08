@@ -22,12 +22,15 @@ fi
 S3SRC=$(gets3src ${LOCAL});
 ROOTDIR=$(gets3root ${LOCAL});
 s3opts=$(gets3opts ${ROOTDIR});
-if [ ! -z ${S3SRC} ]; then
-    awsexec s3 sync ${S3SCRIPTOPTS} ${S3UPDATEOPTS} ${s3opts} \
-            ${S3SRC} ${LOCAL}/;
-else
+if [ -z ${S3SRC} ]; then
     echo "The directory '${LOCAL}' was not checked out of s3"; 
     exit 1;
+elif [ $# = 0 ]; then
+    awsexec s3 sync ${S3SCRIPTOPTS} ${S3UPDATEOPTS} ${s3opts} \
+            ${S3SRC} ${LOCAL}/;
+else for local in $*; do
+         awsexec s3 cp ${S3SCRIPTOPTS} ${S3SRC}${local} ${local};
+     done;
 fi
 
 ###  Local variables: ***
