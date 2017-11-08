@@ -1,8 +1,7 @@
 #!/bin/sh
 
-DEFAULT_AWS=$(which aws);
-SHOW_CMD=
-AWS=${AWS:-${DEFAULT_AWS}}
+export DEFAULT_AWS=$(which aws);
+export AWS=${AWS:-${DEFAULT_AWS}}
 
 awscmd () {
     if [ ! -z "${SHOW_CMD}" ]; then
@@ -130,11 +129,11 @@ gets3root ( ) {
     if [ ! -d ${dir} ]; then
 	scan=$(dirname ${scan});
     fi;
-    while ( [ ! -z "${scan}" ] && [ "${scan}" != "/" ] && [ ! -f .s3root ]); do
+    while ( [ ! -z "${scan}" ] && [ "${scan}" != "/" ] && [ ! -f ${scan}/.s3root ]); do
 	scan=$(dirname ${scan});
 	done;
     if [ -f ${scan}/.s3root ]; then
-	printf "%s/" "${dir}"
+	printf "%s/" "${scan}"
 	retval=0;
     else
 	retval=1;
