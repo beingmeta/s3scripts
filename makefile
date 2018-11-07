@@ -102,7 +102,7 @@ dist/debs.setup:
 	     -o dist/${VERSION}.tar HEAD) &&                         \
 	(cd dist; tar -xf ${VERSION}.tar; rm ${VERSION}.tar) &&      \
 	(cd dist; mv ${VERSION}/dist/debian ${VERSION}/debian) &&    \
-	(dist/gitchangelog s3scripts stable                          \
+	(dist/gitchangelog s3scripts beingmeta                       \
 	  < dist/debian/changelog                                    \
           > dist/${VERSION}/debian/changelog;) &&                    \
 	touch $@;
