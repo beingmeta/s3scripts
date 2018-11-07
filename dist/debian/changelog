@@ -1,3 +1,9 @@
+s3scripts (0.8-4) beingmeta; urgency=medium
+
+  * Move into 'beingmeta' distribution
+
+ -- Ken Haase <kh@beingmeta.com>  Wed, 07 Nov 2018 14:05:01 -0500
+
 s3scripts (0.8-3) stable; urgency=medium
 
   * Fix some typos in header.sh
