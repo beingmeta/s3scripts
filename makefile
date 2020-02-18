@@ -21,7 +21,7 @@ RELEASE=$(shell dist/gitnumrelease s3scripts)
 GPG=$(shell which gpg2 || which gpg || echo gpg)
 GPGID=repoman@beingmeta.com
 
-CODENAME=beingmeta
+CODENAME=setup
 
 SCRIPTS=src/s3checkout src/s3update src/s3commit 	\
 	src/s3setroot src/s3setopts src/s3import 	\
@@ -102,7 +102,7 @@ dist/debs.setup:
 	     -o dist/${VERSION}.tar HEAD) &&                         \
 	(cd dist; tar -xf ${VERSION}.tar; rm ${VERSION}.tar) &&      \
 	(cd dist; mv ${VERSION}/dist/debian ${VERSION}/debian) &&    \
-	(dist/gitchangelog s3scripts beingmeta                       \
+	(dist/gitchangelog s3scripts setup                           \
 	  < dist/debian/changelog                                    \
           > dist/${VERSION}/debian/changelog;) &&                    \
 	touch $@;
