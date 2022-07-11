@@ -1,2 +1,0 @@
-git describe | sed -e "s/-g[0123456789ABCDEFabcdef]*$//"
-
